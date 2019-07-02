@@ -1,0 +1,105 @@
+#include <string>
+#include <vector>
+
+using namespace std;
+
+vector<int> solution(vector<string> genres, vector<int> plays)
+{
+    vector<int> answer;
+    
+    vector<string> tmp_genres;
+    vector<int> tmp_play;
+        
+    vector<string> index_genres;
+    vector<int> index_play;
+    
+    int tmp_ch_play;
+    string tmp_ch_genres;
+    
+    int max_1 = -1;
+    int max_2 = -2;
+    
+    vector <int> result = {-1, -1};
+    
+    for(int i =0; i<plays.size(); i++)
+    {
+        index_genres.push_back(genres[i]);
+        index_play.push_back(plays[i]);
+    }
+    
+    for(int i =0; i<plays.size(); i++)
+    {
+        tmp_genres.push_back(genres[i]);
+        tmp_play.push_back(plays[i]);
+        
+        for(int j = i+1; j<plays.size(); j++)
+        {
+            if(genres[i].compare(genres[j]) == 0)
+            {
+                tmp_play[i] += plays[j];
+                plays.erase(plays.begin()+j);
+                genres.erase(genres.begin()+j);
+                j--;
+            }
+        }
+    }
+    
+    for(int i=0; i<tmp_play.size(); i++)
+    {
+        for(int j=i+1; j<tmp_play.size(); j++)
+        {
+            if(tmp_play[i] < tmp_play[j])
+            {
+                tmp_ch_play = tmp_play[i];
+                tmp_ch_genres = tmp_genres[i];
+                tmp_play[i] = tmp_play[j];
+                tmp_genres[i] = tmp_genres[j];;
+                tmp_play[j] = tmp_ch_play;
+                tmp_genres[j] = tmp_ch_genres;
+            }
+        }
+    }
+    
+    for(int i =0; i<tmp_play.size(); i++)
+    {
+        for(int j = 0; j<index_play.size(); j++)
+        {
+            if(tmp_genres[i].compare(index_genres[j]) == 0 && index_play[j] == max_1 && max_2 < max_1)
+            {
+                max_2 = max_1;
+                result[1] = j;
+            }
+            
+            if(tmp_genres[i].compare(index_genres[j]) == 0 && index_play[j] > max_1)
+            {
+                max_2 = max_1;
+                max_1 = index_play[j];
+                result[1] = result[0];
+                result[0] = j;
+            }
+            
+            if(tmp_genres[i].compare(index_genres[j]) == 0 && index_play[j] < max_1 && index_play[j] > max_2)
+            {
+                max_2 = index_play[j];
+                result[1] = j;
+            }
+        }
+        
+        if(result[1] == -1)
+        {
+            answer.push_back(result[0]);
+        }
+        else if(result[1] > -1)
+        {
+            answer.push_back(result[0]);
+            answer.push_back(result[1]);
+        }
+        
+        result[0] = -1;
+        result[1] = -1;
+        max_1 = -1;
+        max_2 = -2;
+    }
+    
+    return answer;
+}
